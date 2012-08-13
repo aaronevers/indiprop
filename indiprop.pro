@@ -1,4 +1,4 @@
-TARGET = cliq
+TARGET = indiprop
 
 TEMPLATE = app
 
