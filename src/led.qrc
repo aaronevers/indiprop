@@ -1,0 +1,10 @@
+ <!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+     <file>led/blue.png</file>
+     <file>led/green.png</file>
+     <file>led/grey.png</file>
+     <file>led/orange.png</file>
+     <file>led/red.png</file>
+ </qresource>
+ </RCC>
+
