@@ -13,20 +13,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
- 
-#include "mainwindow.h"
 
-int main(int argc, char *argv[])
+#ifndef TREEITEM_H
+#define TREEITEM_H
+
+#include <QtGui>
+
+class TreeItem : public QWidget
 {
-	QApplication app(argc, argv);
-	app.setApplicationName("indiprop");
-	app.setApplicationVersion("0.0");
-	app.setOrganizationName(qApp->applicationName());
-	app.setOrganizationDomain(qApp->applicationName());
+public:
+	TreeItem();
 	
-	MainWindow mainWindow;
-	mainWindow.show();
+	QTreeWidgetItem *widget;
+	QString format;
+	QString text;
+	QString perm;
+	QString rule;
+	QButtonGroup *group;
+	QAbstractButton *button;
+};
 
-	return app.exec();
-}
+#endif
 

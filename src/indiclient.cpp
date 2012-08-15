@@ -51,7 +51,7 @@ void IndiClient::socketConnected()
 	getProperties.setAttribute("version", indi::VERSION);
 	doc.appendChild(getProperties);
 
-    mQTcpSocket.write(doc.toString().toAscii());
+	sendProperty(doc);
 }
 
 bool IndiClient::connected()
@@ -68,6 +68,11 @@ void IndiClient::socketError(QAbstractSocket::SocketError)
 {
     qout << "Socket error from indiserver@" << mQTcpSocket.peerName() << ":" << mPort
 		<< " (" << mQTcpSocket.errorString() << ")" << endl;
+}
+
+void IndiClient::sendProperty(const QDomDocument &doc)
+{
+	mQTcpSocket.write(doc.toString().toAscii());
 }
 
 void IndiClient::socketReadyRead()

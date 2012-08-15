@@ -19,15 +19,7 @@
 
 #include <QtGui>
 #include "indiclient.h"
-
-struct TreeItem
-{
-	TreeItem() : widget(0) {};
-	
-	QTreeWidgetItem *widget;
-	QString format;
-	QString text;
-};
+#include "treewidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -44,7 +36,7 @@ private:
 	QMenu *mContextMenu;
 	QAction *mSexagesimal;
 
-	QMap<QString, TreeItem> mTreeWidgetItems;
+	QMap<QString, TreeItem*> mTreeWidgetItems;
 
 protected:
 	virtual void closeEvent(QCloseEvent *);

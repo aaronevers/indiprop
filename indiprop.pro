@@ -15,6 +15,6 @@ OBJECTS_DIR = tmp
 MOC_DIR = tmp
 RCC_DIR = tmp
 
-HEADERS += src/indiclient.h   src/mainwindow.h
-SOURCES += src/indiclient.cpp src/mainwindow.cpp src/main.cpp
+HEADERS += src/indiclient.h   src/treewidget.h   src/mainwindow.h
+SOURCES += src/indiclient.cpp src/treewidget.cpp src/mainwindow.cpp src/main.cpp
 

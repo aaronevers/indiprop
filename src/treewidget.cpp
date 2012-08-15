@@ -14,19 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
  
-#include "mainwindow.h"
+ #include "treewidget.h"
 
-int main(int argc, char *argv[])
+TreeItem::TreeItem() : widget(0), group(0), button(0)
 {
-	QApplication app(argc, argv);
-	app.setApplicationName("indiprop");
-	app.setApplicationVersion("0.0");
-	app.setOrganizationName(qApp->applicationName());
-	app.setOrganizationDomain(qApp->applicationName());
-	
-	MainWindow mainWindow;
-	mainWindow.show();
-
-	return app.exec();
 }
 

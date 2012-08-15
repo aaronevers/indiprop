@@ -34,7 +34,7 @@ MainWindow::MainWindow() : mContextMenu(NULL)
 	mTreeWidget = new QTreeWidget(this);
 	mTreeWidget->setObjectName(windowTitle() + " treewidget");
 	mTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-	mTreeWidget->setHeaderLabels(QStringList() << "Property" << "Value" << "Label");
+	mTreeWidget->setHeaderLabels(QStringList() << "Property" << "Value" << "" << "Label");
 	mTreeWidget->header()->restoreState(settings.value("TreeWidgetHeader/State", mTreeWidget->header()->saveState()).toByteArray());
 	setCentralWidget(mTreeWidget);
 	connect(mTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(customContextMenuRequest(const QPoint &)));
@@ -65,12 +65,12 @@ void MainWindow::closeEvent(QCloseEvent *)
 	if (mSexagesimal != NULL)
 		settings.setValue("Sexigesimal", mSexagesimal->isChecked());
 	
-	QMapIterator<QString, TreeItem> tree(mTreeWidgetItems);
+	QMapIterator<QString, TreeItem*> tree(mTreeWidgetItems);
 	while (tree.hasNext())
 	{
 		tree.next();
-		if (tree.value().widget->childCount())
-			settings.setValue("TreeWidget/State/" + tree.key(), tree.value().widget->isExpanded()); 
+		if (tree.value()->widget->childCount())
+			settings.setValue("TreeWidget/State/" + tree.key(), tree.value()->widget->isExpanded()); 
 	}
 }
 
@@ -121,31 +121,43 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 		QString op = element.tagName().left(3);
 		if (op == "set" || op == "def")
 		{
-			QMap<QString, TreeItem>::iterator d = mTreeWidgetItems.find(device);
-			if (d == mTreeWidgetItems.end())
+			TreeItem *d;				
+			if (!mTreeWidgetItems.contains(device))
 			{
-				d = mTreeWidgetItems.insert(device, TreeItem());
+				d = new TreeItem();
+				mTreeWidgetItems[device] = d;
 				d->widget = new QTreeWidgetItem(mTreeWidget->invisibleRootItem());
 				d->widget->setText(0, device);
 				d->widget->setExpanded(settings.value("TreeWidget/State/" + device).toBool());
 				mTreeWidget->invisibleRootItem()->sortChildren(0, Qt::AscendingOrder);
 			}
+			
+			d = mTreeWidgetItems[device];
 
 			if (element.hasAttribute("name"))
 			{
 				QString name = element.attribute("name");
-				QString devicename = device + "/" + name;				
-				QMap<QString, TreeItem>::iterator dn = mTreeWidgetItems.find(devicename);
-				if (dn == mTreeWidgetItems.end())
+				QString type = element.tagName().mid(3);
+				QString devicename = device + "/" + name;
+				TreeItem *dn;				
+				if (!mTreeWidgetItems.contains(devicename))
 				{
-					dn = mTreeWidgetItems.insert(devicename, TreeItem());
+					dn = new TreeItem();
+					mTreeWidgetItems[devicename] = dn;
 					dn->widget = new QTreeWidgetItem(d->widget);
 					dn->widget->setText(0, name);
 					dn->widget->setExpanded(settings.value("TreeWidget/State/" + devicename).toBool());
-					dn->widget->setText(2, element.attribute("label"));						
+					dn->widget->setText(3, element.attribute("label"));						
 					d->widget->sortChildren(0, Qt::AscendingOrder);
+
+					dn->rule = element.attribute("rule");
+					dn->perm = element.attribute("perm");
+					
+					if (type == "SwitchVector" && dn->perm.contains("w"))
+						dn->group = new QButtonGroup();
 				}
 
+				dn = mTreeWidgetItems[devicename];
 				dn->widget->setIcon(0, toIcon(state));
 				dn->widget->setToolTip(0, state);
 				
@@ -155,30 +167,56 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 					if (child.hasAttribute("name"))
 					{
 						QString property = child.attribute("name");
-						QString devicenameproperty = devicename + "/" + property;				
-						QMap<QString, TreeItem>::iterator dnp = mTreeWidgetItems.find(devicenameproperty);
-						if (dnp == mTreeWidgetItems.end())
+						QString devicenameproperty = devicename + "/" + property;
+
+						TreeItem *dnp;
+						if (!mTreeWidgetItems.contains(devicenameproperty))
 						{
-							dnp = mTreeWidgetItems.insert(devicenameproperty, TreeItem());
+							dnp = new TreeItem();
+							mTreeWidgetItems[devicenameproperty] = dnp;
 							dnp->widget = new QTreeWidgetItem(dn->widget);
 							dnp->widget->setText(0, property);
 							dnp->widget->setExpanded(settings.value("TreeWidget/State/" + devicenameproperty).toBool());
-							dnp->widget->setText(2, child.attribute("label"));						
+							dnp->widget->setText(3, child.attribute("label"));						
 							dn->widget->sortChildren(0, Qt::AscendingOrder);
+							
+							if (dn->group)
+							{
+								if (dn->rule == "OneOfMany")
+								{
+									dn->group->setExclusive(true);
+									dnp->button = new QRadioButton();
+									dn->group->addButton(dnp->button);
+									mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
+								}
+								else  if (dn->rule == "AnyOfMany")
+								{
+									dn->group->setExclusive(false);
+									dnp->button = new QCheckBox();
+									dn->group->addButton(dnp->button);
+									mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
+								}
+								else
+								{
+									dnp->button = new QPushButton(property);
+									dn->group->addButton(dnp->button);
+									mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
+								}
+							}
 						}
 						
+						dnp = mTreeWidgetItems[devicenameproperty];
 						dnp->text = child.text().trimmed();
 						QString text = dnp->text;
 
-						QString type = child.tagName().mid(3);
-						if (type == "Light" || type == "Switch")
+						if (type == "LightVector" || type == "SwitchVector")
 						{
 							dnp->widget->setIcon(1, toIcon(text));
 							dnp->widget->setToolTip(1, text);
 						}
 						else
 						{
-							if (type == "Number")
+							if (type == "NumberVector")
 							{
 								if (child.hasAttribute("format"))
 									dnp->format = child.attribute("format");
@@ -219,12 +257,12 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 
 void MainWindow::sexagesimalToggled()
 {
-	QMapIterator<QString, TreeItem> tree(mTreeWidgetItems);
+	QMapIterator<QString, TreeItem*> tree(mTreeWidgetItems);
 	while (tree.hasNext())
 	{
 		tree.next();
-		if (tree.value().format.endsWith('m'))
-			tree.value().widget->setText(1, IndiClient::formatNumber(tree.value().format, tree.value().text, mSexagesimal->isChecked()));
+		if (tree.value()->format.endsWith('m'))
+			tree.value()->widget->setText(1, IndiClient::formatNumber(tree.value()->format, tree.value()->text, mSexagesimal->isChecked()));
 	}
 }
 
