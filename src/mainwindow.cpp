@@ -100,7 +100,7 @@ QIcon toIcon(const QString &status)
 {
 	if (status == "On")
 		return QIcon(":/led/blue.png");
-	if (status == "Ok")
+	else if (status == "Ok")
 		return QIcon(":/led/green.png");
 	else if (status == "Busy")
 		return QIcon(":/led/orange.png");
@@ -119,6 +119,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
  		QString state = element.attribute("state");
 		QString device = element.attribute("device");
 		QString op = element.tagName().left(3);
+			
 		if (op == "set" || op == "def")
 		{
 			TreeItem *d;				
@@ -129,6 +130,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 				d->widget = new QTreeWidgetItem(mTreeWidget->invisibleRootItem());
 				d->widget->setText(0, device);
 				d->widget->setExpanded(settings.value("TreeWidget/State/" + device).toBool());
+				d->device = device;
 				mTreeWidget->invisibleRootItem()->sortChildren(0, Qt::AscendingOrder);
 			}
 			
@@ -147,19 +149,33 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 					dn->widget = new QTreeWidgetItem(d->widget);
 					dn->widget->setText(0, name);
 					dn->widget->setExpanded(settings.value("TreeWidget/State/" + devicename).toBool());
-					dn->widget->setText(3, element.attribute("label"));						
+					dn->widget->setText(3, element.attribute("label"));		
+					dn->device = device;
+					dn->vector = name;
 					d->widget->sortChildren(0, Qt::AscendingOrder);
 
 					dn->rule = element.attribute("rule");
 					dn->perm = element.attribute("perm");
 					
 					if (type == "SwitchVector" && dn->perm.contains("w"))
+					{
 						dn->group = new QButtonGroup();
+						connect(dn, SIGNAL(propertyUpdated(QDomDocument)), &mClient, SLOT(sendProperty(QDomDocument)));
+						
+						if (dn->rule == "OneOfMany")
+							dn->group->setExclusive(true);
+						else
+							dn->group->setExclusive(false);
+
+						connect(dn->group, SIGNAL(buttonClicked(QAbstractButton *)), dn, SLOT(groupClicked(QAbstractButton *)));
+					}
 				}
 
 				dn = mTreeWidgetItems[devicename];
 				dn->widget->setIcon(0, toIcon(state));
 				dn->widget->setToolTip(0, state);
+				if (element.hasAttribute("message"))
+					dn->widget->setToolTip(0, element.attribute("message"));
 				
 				QDomElement child;
 				for (child = element.firstChildElement(); !child.isNull(); child = child.nextSiblingElement())
@@ -177,31 +193,27 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 							dnp->widget = new QTreeWidgetItem(dn->widget);
 							dnp->widget->setText(0, property);
 							dnp->widget->setExpanded(settings.value("TreeWidget/State/" + devicenameproperty).toBool());
-							dnp->widget->setText(3, child.attribute("label"));						
-							dn->widget->sortChildren(0, Qt::AscendingOrder);
+							dnp->widget->setText(3, child.attribute("label"));
+							dnp->device = device;
+							dnp->vector = name;
+							dnp->property = property;
+							dnp->min = child.attribute("min").toDouble();
+							dnp->max = child.attribute("max").toDouble();
+							dnp->format = child.attribute("format");
 							
 							if (dn->group)
 							{
 								if (dn->rule == "OneOfMany")
-								{
-									dn->group->setExclusive(true);
 									dnp->button = new QRadioButton();
-									dn->group->addButton(dnp->button);
-									mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
-								}
 								else  if (dn->rule == "AnyOfMany")
-								{
-									dn->group->setExclusive(false);
 									dnp->button = new QCheckBox();
-									dn->group->addButton(dnp->button);
-									mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
-								}
 								else
-								{
 									dnp->button = new QPushButton(property);
-									dn->group->addButton(dnp->button);
-									mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
-								}
+
+								dnp->button->setToolTip(property);
+								dnp->button->setCheckable(true);
+								dn->group->addButton(dnp->button);
+								mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
 							}
 						}
 						
@@ -213,15 +225,22 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 						{
 							dnp->widget->setIcon(1, toIcon(text));
 							dnp->widget->setToolTip(1, text);
+							if (dnp->button)
+								dnp->button->setChecked((text == "On")?true:false);
 						}
 						else
 						{
 							if (type == "NumberVector")
 							{
-								if (child.hasAttribute("format"))
-									dnp->format = child.attribute("format");
-
 								text = IndiClient::formatNumber(dnp->format, text, mSexagesimal->isChecked());
+								if (dnp->min != dnp->max)
+								{
+									double n = text.toDouble();
+									if (n < dnp->min || n > dnp->max)
+										dnp->widget->setIcon(0, toIcon("Alert"));
+									else
+										dnp->widget->setIcon(0, QIcon());
+								}
 							}
 
 							dnp->widget->setText(1, text);

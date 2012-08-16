@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 	QApplication app(argc, argv);
 	app.setApplicationName("indiprop");
 	app.setApplicationVersion("0.0");
-	app.setOrganizationName(qApp->applicationName());
-	app.setOrganizationDomain(qApp->applicationName());
+	app.setOrganizationName("indiprop.googlecode.com");
+	app.setOrganizationDomain("indiprop.googlecode.com");
 	
 	MainWindow mainWindow;
 	mainWindow.show();

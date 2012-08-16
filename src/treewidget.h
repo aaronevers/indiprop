@@ -18,19 +18,33 @@
 #define TREEITEM_H
 
 #include <QtGui>
+#include <QtXml>
 
 class TreeItem : public QWidget
 {
+	Q_OBJECT;
+	
 public:
 	TreeItem();
 	
 	QTreeWidgetItem *widget;
+	QString device;
+	QString vector;
+	QString property;
 	QString format;
 	QString text;
 	QString perm;
 	QString rule;
+	double min;
+	double max;
 	QButtonGroup *group;
 	QAbstractButton *button;
+	
+public slots:
+	void groupClicked(QAbstractButton *);
+	
+signals:
+	void propertyUpdated(QDomDocument);
 };
 
 #endif

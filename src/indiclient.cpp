@@ -70,7 +70,7 @@ void IndiClient::socketError(QAbstractSocket::SocketError)
 		<< " (" << mQTcpSocket.errorString() << ")" << endl;
 }
 
-void IndiClient::sendProperty(const QDomDocument &doc)
+void IndiClient::sendProperty(QDomDocument doc)
 {
 	mQTcpSocket.write(doc.toString().toAscii());
 }

@@ -42,8 +42,6 @@ public:
 	void socketConnect(const QString &hoststring);
 	bool connected();
 	
-	void sendProperty(const QDomDocument &dom);
-	
 	static QString formatNumber(const QString &format, const QString &number, const bool &sexagesimal);
 
 private:
@@ -58,6 +56,8 @@ private slots:
     void socketDisconnected();
     void socketError(QAbstractSocket::SocketError);
     void socketReadyRead();
+	void sendProperty(QDomDocument dom);
+	
 };
 
 #endif
