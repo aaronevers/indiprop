@@ -175,7 +175,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 				dn->widget->setIcon(0, toIcon(state));
 				dn->widget->setToolTip(0, state);
 				if (element.hasAttribute("message"))
-					dn->widget->setToolTip(0, element.attribute("message"));
+					dn->widget->setToolTip(0, state + ": " + element.attribute("message"));
 				
 				QDomElement child;
 				for (child = element.firstChildElement(); !child.isNull(); child = child.nextSiblingElement())
@@ -252,23 +252,23 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 			state = "Idle";
 
 			int i;
-			for (i = 0; state != "Alert" && i < d->widget->childCount(); i++)
+			for (i = 0; state.split(":")[0] != "Alert" && i < d->widget->childCount(); i++)
 			{
-				if (state != "Alert" && d->widget->child(i)->toolTip(0) == "Alert")
-					state = "Alert";
+				if (state.split(":")[0] != "Alert" && d->widget->child(i)->toolTip(0).split(":")[0] == "Alert")
+					state = d->widget->child(i)->toolTip(0);
 				else
 				{
-					if (state != "Busy" && d->widget->child(i)->toolTip(0) == "Busy")
-						state = "Busy";
+					if (state.split(":")[0] != "Busy" && d->widget->child(i)->toolTip(0).split(":")[0] == "Busy")
+						state = d->widget->child(i)->toolTip(0);
 					else
 					{
-						if (state != "Ok" && d->widget->child(i)->toolTip(0) == "Ok")
-							state = "Ok";
+						if (state.split(":")[0] != "Ok" && d->widget->child(i)->toolTip(0).split(":")[0] == "Ok")
+							state = d->widget->child(i)->toolTip(0);
 					}
 				}
 			}
 
-			d->widget->setIcon(0, toIcon(state));
+			d->widget->setIcon(0, toIcon(state.split(":")[0]));
 			d->widget->setToolTip(0, state);
 		}
 	}
