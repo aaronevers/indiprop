@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 	app.setApplicationName("indiprop");
-	app.setApplicationVersion("0.0");
+	app.setApplicationVersion("0.1");
 	app.setOrganizationName("indiprop.googlecode.com");
 	app.setOrganizationDomain("indiprop.googlecode.com");
 	

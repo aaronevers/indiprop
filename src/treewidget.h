@@ -30,6 +30,7 @@ public:
 	QTreeWidgetItem *widget;
 	QString device;
 	QString vector;
+	QString type;
 	QString property;
 	QString format;
 	QString text;
@@ -39,9 +40,13 @@ public:
 	double max;
 	QButtonGroup *group;
 	QAbstractButton *button;
+	QLineEdit *edit;
+	
+	QList<TreeItem*> children;
 	
 public slots:
 	void groupClicked(QAbstractButton *);
+	void editClicked();
 	
 signals:
 	void propertyUpdated(QDomDocument);

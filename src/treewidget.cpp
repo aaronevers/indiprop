@@ -16,7 +16,7 @@
  
  #include "treewidget.h"
 
-TreeItem::TreeItem() : widget(0), min(0), max(0), group(0), button(0)
+TreeItem::TreeItem() : widget(0), min(0), max(0), group(0), button(0), edit(0)
 {
 }
 
@@ -31,6 +31,27 @@ void TreeItem::groupClicked(QAbstractButton *b)
 	swtch.appendChild(doc.createTextNode(b->isChecked()?"On":"Off"));
 	switchVector.appendChild(swtch);
 	doc.appendChild(switchVector);
+	emit propertyUpdated(doc);	
+}
+
+void TreeItem::editClicked()
+{
+	QDomDocument doc("");
+	QDomElement property = doc.createElement("new" + type + "Vector");
+	property.setAttribute("device", device);
+	property.setAttribute("name", vector);
+
+	QListIterator<TreeItem*> i(children);
+	while (i.hasNext())
+	{
+		TreeItem *n = i.next();
+		QDomElement element = doc.createElement("one" + type);
+		element.setAttribute("name", n->property);
+		element.appendChild(doc.createTextNode(n->edit->text()));
+		property.appendChild(element);
+	}
+	
+	doc.appendChild(property);
 	emit propertyUpdated(doc);	
 }
 

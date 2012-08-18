@@ -152,22 +152,33 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 					dn->widget->setText(3, element.attribute("label"));		
 					dn->device = device;
 					dn->vector = name;
+					dn->type = type;
+					dn->type.remove("Vector");
 					d->widget->sortChildren(0, Qt::AscendingOrder);
 
 					dn->rule = element.attribute("rule");
 					dn->perm = element.attribute("perm");
 					
-					if (type == "SwitchVector" && dn->perm.contains("w"))
+					if (dn->perm.contains("w"))
 					{
-						dn->group = new QButtonGroup();
-						connect(dn, SIGNAL(propertyUpdated(QDomDocument)), &mClient, SLOT(sendProperty(QDomDocument)));
+						if (type == "SwitchVector")
+						{
+							dn->group = new QButtonGroup();
 						
-						if (dn->rule == "OneOfMany")
-							dn->group->setExclusive(true);
-						else
-							dn->group->setExclusive(false);
+							if (dn->rule == "OneOfMany")
+								dn->group->setExclusive(true);
+							else
+								dn->group->setExclusive(false);
 
-						connect(dn->group, SIGNAL(buttonClicked(QAbstractButton *)), dn, SLOT(groupClicked(QAbstractButton *)));
+							connect(dn->group, SIGNAL(buttonClicked(QAbstractButton *)), dn, SLOT(groupClicked(QAbstractButton *)));
+						}
+						else
+						{
+							dn->button = new QPushButton(name);
+							connect(dn->button, SIGNAL(clicked()), dn, SLOT(editClicked()));
+						}
+
+						connect(dn, SIGNAL(propertyUpdated(QDomDocument)), &mClient, SLOT(sendProperty(QDomDocument)));
 					}
 				}
 
@@ -192,7 +203,6 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 							mTreeWidgetItems[devicenameproperty] = dnp;
 							dnp->widget = new QTreeWidgetItem(dn->widget);
 							dnp->widget->setText(0, property);
-							dnp->widget->setExpanded(settings.value("TreeWidget/State/" + devicenameproperty).toBool());
 							dnp->widget->setText(3, child.attribute("label"));
 							dnp->device = device;
 							dnp->vector = name;
@@ -200,6 +210,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 							dnp->min = child.attribute("min").toDouble();
 							dnp->max = child.attribute("max").toDouble();
 							dnp->format = child.attribute("format");
+							dn->children << dnp;
 							
 							if (dn->group)
 							{
@@ -214,6 +225,12 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 								dnp->button->setCheckable(true);
 								dn->group->addButton(dnp->button);
 								mTreeWidget->setItemWidget(dnp->widget, 2, dnp->button);
+							}
+							else if (dn->button)
+							{
+								dnp->edit = new QLineEdit;
+								mTreeWidget->setItemWidget(dnp->widget, 2, dnp->edit);
+								connect(dnp->edit, SIGNAL(returnPressed()), dn, SLOT(editClicked()));
 							}
 						}
 						
@@ -246,6 +263,13 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 							dnp->widget->setText(1, text);
 						}
 					}
+				}
+				
+				if (dn->button)
+				{
+					QTreeWidgetItem *tm = new QTreeWidgetItem(dn->widget);
+					mTreeWidget->setItemWidget(tm, 2, dn->button);
+					dn->button = 0;
 				}
 			}
 			
