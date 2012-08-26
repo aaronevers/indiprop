@@ -1,4 +1,4 @@
-indiprop - INDI Property Browser - v0.0
+indiprop - INDI Property Browser - v1.00
 _____________________________________________________________________
 
 This program provides a generic user interface for browsing device 
