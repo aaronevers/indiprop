@@ -16,7 +16,7 @@
  
  #include "treewidget.h"
 
-TreeItem::TreeItem() : widget(0), min(0), max(0), group(0), button(0), edit(0)
+TreeItem::TreeItem() : widget(0), min(0), max(0), group(0), button(0), edit(0), disabled(false)
 {
 }
 
@@ -31,6 +31,8 @@ void TreeItem::groupClicked(QAbstractButton *b)
 	swtch.appendChild(doc.createTextNode(b->isChecked()?"On":"Off"));
 	switchVector.appendChild(swtch);
 	doc.appendChild(switchVector);
+	disabled = true;
+	widget->parent()->setDisabled(true);
 	emit propertyUpdated(doc);	
 }
 
@@ -45,13 +47,16 @@ void TreeItem::editClicked()
 	while (i.hasNext())
 	{
 		TreeItem *n = i.next();
+		if (n->edit->text().trimmed().size() == 0)
+			return;
 		QDomElement element = doc.createElement("one" + type);
 		element.setAttribute("name", n->property);
 		element.appendChild(doc.createTextNode(n->edit->text()));
 		property.appendChild(element);
 	}
-	
 	doc.appendChild(property);
+	disabled = true;
+	widget->parent()->setDisabled(true);
 	emit propertyUpdated(doc);	
 }
 

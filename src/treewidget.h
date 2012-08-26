@@ -41,6 +41,7 @@ public:
 	QButtonGroup *group;
 	QAbstractButton *button;
 	QLineEdit *edit;
+	bool disabled;
 	
 	QList<TreeItem*> children;
 	

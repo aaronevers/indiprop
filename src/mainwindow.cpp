@@ -155,6 +155,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 					dn->type = type;
 					dn->type.remove("Vector");
 					d->widget->sortChildren(0, Qt::AscendingOrder);
+					d->children << dn;
 
 					dn->rule = element.attribute("rule");
 					dn->perm = element.attribute("perm");
@@ -186,8 +187,11 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 				dn->widget->setIcon(0, toIcon(state));
 				dn->widget->setToolTip(0, state);
 				if (element.hasAttribute("message"))
+				{
 					dn->widget->setToolTip(0, state + ": " + element.attribute("message"));
-				
+					qout << element.attribute("timestamp") << ", " << device << "." << name << ", \"" << element.attribute("message") << "\"" << endl; 
+				}
+
 				QDomElement child;
 				for (child = element.firstChildElement(); !child.isNull(); child = child.nextSiblingElement())
 				{
@@ -271,27 +275,34 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 					mTreeWidget->setItemWidget(tm, 2, dn->button);
 					dn->button = 0;
 				}
+
+				dn->disabled = false;
 			}
 			
 			state = "Idle";
+			bool disable = false;
 
 			int i;
-			for (i = 0; state.split(":")[0] != "Alert" && i < d->widget->childCount(); i++)
+			for (i = 0; state.split(":")[0] != "Alert" && i < d->children.size(); i++)
 			{
-				if (state.split(":")[0] != "Alert" && d->widget->child(i)->toolTip(0).split(":")[0] == "Alert")
-					state = d->widget->child(i)->toolTip(0);
+				if (d->children[i]->disabled)
+					disable = true;
+
+				if (state.split(":")[0] != "Alert" && d->children[i]->widget->toolTip(0).split(":")[0] == "Alert")
+					state = d->children[i]->widget->toolTip(0);
 				else
 				{
-					if (state.split(":")[0] != "Busy" && d->widget->child(i)->toolTip(0).split(":")[0] == "Busy")
-						state = d->widget->child(i)->toolTip(0);
+					if (state.split(":")[0] != "Busy" && d->children[i]->widget->toolTip(0).split(":")[0] == "Busy")
+						state = d->children[i]->widget->toolTip(0);
 					else
 					{
-						if (state.split(":")[0] != "Ok" && d->widget->child(i)->toolTip(0).split(":")[0] == "Ok")
-							state = d->widget->child(i)->toolTip(0);
+						if (state.split(":")[0] != "Ok" && d->children[i]->widget->toolTip(0).split(":")[0] == "Ok")
+							state = d->children[i]->widget->toolTip(0);
 					}
 				}
 			}
 
+			d->widget->setDisabled(disable);
 			d->widget->setIcon(0, toIcon(state.split(":")[0]));
 			d->widget->setToolTip(0, state);
 		}
