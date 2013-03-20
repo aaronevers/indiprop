@@ -16,17 +16,21 @@
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow() : mContextMenu(NULL)
+MainWindow::MainWindow(const QMap<QString, QString> &argm) : mContextMenu(NULL)
 {
 	QSettings settings;
 
 	setWindowTitle(qApp->applicationName() + " " + qApp->applicationVersion());
 	setObjectName(windowTitle());
 
-	mHostnameLineEdit = new QLineEdit(settings.value("Toolbar/Hostname").toString());
+    QString host = settings.value("Toolbar/Hostname").toString();
+    if (argm.contains("host"))
+        host = argm["host"];
+
+	mHostnameLineEdit = new QLineEdit(host);
 	mToolbar = addToolBar("Show Toolbar");
 	mToolbar->setObjectName(mToolbar->windowTitle());
-	mToolbar->addWidget(new QLabel("Hostname:"));
+	mToolbar->addWidget(new QLabel("Host:"));
 	mToolbar->addWidget(mHostnameLineEdit);
 	mToolbar->addAction("Connect", this, SLOT(socketConnect()));
 	connect(mHostnameLineEdit, SIGNAL(returnPressed()), SLOT(socketConnect()));

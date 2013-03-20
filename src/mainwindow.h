@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT;
 
 public:
-	MainWindow();
+	MainWindow(const QMap<QString, QString> &argm);
 
 private:
 	IndiClient mClient;
@@ -37,6 +37,7 @@ private:
 	QAction *mSexagesimal;
 
 	QMap<QString, TreeItem*> mTreeWidgetItems;
+    
 
 protected:
 	virtual void closeEvent(QCloseEvent *);
