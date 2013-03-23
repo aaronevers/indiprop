@@ -33,7 +33,6 @@ private:
 	QToolBar *mToolbar;
 	QLineEdit *mHostnameLineEdit;
 	QTreeWidget *mTreeWidget;	
-	QMenu *mContextMenu;
 	QAction *mSexagesimal;
 
 	QMap<QString, TreeItem*> mTreeWidgetItems;

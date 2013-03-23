@@ -3,7 +3,6 @@ TARGET = indiprop
 TEMPLATE = app
 
 CONFIG += thread console
-CONFIG -= debug
 
 QT += network xml
 

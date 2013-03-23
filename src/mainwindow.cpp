@@ -16,7 +16,7 @@
 
 #include "mainwindow.h"
 
-MainWindow::MainWindow(const QMap<QString, QString> &argm) : mContextMenu(NULL)
+MainWindow::MainWindow(const QMap<QString, QString> &argm)
 {
 	QSettings settings;
 
@@ -34,6 +34,7 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm) : mContextMenu(NULL)
 	mToolbar->addWidget(mHostnameLineEdit);
 	mToolbar->addAction("Connect", this, SLOT(socketConnect()));
 	connect(mHostnameLineEdit, SIGNAL(returnPressed()), SLOT(socketConnect()));
+
 	
 	mTreeWidget = new QTreeWidget(this);
 	mTreeWidget->setObjectName(windowTitle() + " treewidget");
@@ -55,6 +56,13 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm) : mContextMenu(NULL)
 	
 	if (settings.value("Client/ConnectedOnClose", false).toBool())
 		socketConnect();
+		
+		
+//	QDockWidget *dock = new QDockWidget("Browser", this);
+//	dock->setWidget(mTreeWidget);
+//	addDockWidget(Qt::TopDockWidgetArea, dock);
+		
+	
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
@@ -80,14 +88,10 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 QMenu *MainWindow::createPopupMenu()
 {
-	if (!mContextMenu)
-	{
-		mContextMenu = QMainWindow::createPopupMenu();
-		mContextMenu->addSeparator();
-		mContextMenu->addAction(mSexagesimal);
-	}
-	
-	return mContextMenu;
+	QMenu *contextMenu = QMainWindow::createPopupMenu();
+	contextMenu->addSeparator();
+	contextMenu->addAction(mSexagesimal);	
+	return contextMenu;
 }
 
 void MainWindow::customContextMenuRequest(const QPoint &p)
