@@ -41,7 +41,6 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	mTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 	mTreeWidget->setHeaderLabels(QStringList() << "Property" << "Value" << "" << "Label");
 	mTreeWidget->header()->restoreState(settings.value("TreeWidgetHeader/State", mTreeWidget->header()->saveState()).toByteArray());
-	setCentralWidget(mTreeWidget);
 	connect(mTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(customContextMenuRequest(const QPoint &)));
 
 	mSexagesimal = new QAction("Show Sexagesimal", this);
@@ -49,20 +48,28 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	mSexagesimal->setChecked(settings.value("Sexigesimal", true).toBool());
 	connect(mSexagesimal, SIGNAL(triggered()), SLOT(sexagesimalToggled()));
 	
-	restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
-	restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
-	
 	connect(&mClient, SIGNAL(propertyUpdate(QDomDocument)), SLOT(propertyUpdated(QDomDocument)));
 	
 	if (settings.value("Client/ConnectedOnClose", false).toBool())
 		socketConnect();
-		
-		
-//	QDockWidget *dock = new QDockWidget("Browser", this);
-//	dock->setWidget(mTreeWidget);
-//	addDockWidget(Qt::TopDockWidgetArea, dock);
-		
+
+	QDockWidget *dock = new QDockWidget("Browser", this);
+	dock->setObjectName("BrowserDock");
+	dock->setWidget(mTreeWidget);
+	addDockWidget(Qt::TopDockWidgetArea, dock);
+
+	mTextEdit = new QTextEdit(this);
+	mTextEdit->setReadOnly(true);
+
+	dock = new QDockWidget("Messages", this);
+	dock->setObjectName("MessagesDock");
+	dock->setWidget(mTextEdit);
+	addDockWidget(Qt::TopDockWidgetArea, dock);
+
+	restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
+	restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
 	
+	setDockNestingEnabled(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *)
@@ -197,7 +204,8 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 				if (element.hasAttribute("message"))
 				{
 					dn->widget->setToolTip(0, state + ": " + element.attribute("message"));
-					qout << element.attribute("timestamp") << ", " << device << "." << name << ", \"" << element.attribute("message") << "\"" << endl; 
+					QString text = element.attribute("timestamp") + ", " + device + "." + name + ", \"" + element.attribute("message") + "\"\n";
+					mTextEdit->setPlainText(text + mTextEdit->toPlainText());
 				}
 
 				QDomElement child;

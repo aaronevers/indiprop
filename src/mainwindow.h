@@ -34,6 +34,7 @@ private:
 	QLineEdit *mHostnameLineEdit;
 	QTreeWidget *mTreeWidget;	
 	QAction *mSexagesimal;
+	QTextEdit *mTextEdit;
 
 	QMap<QString, TreeItem*> mTreeWidgetItems;
     
