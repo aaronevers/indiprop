@@ -47,8 +47,6 @@ void TreeItem::editClicked()
 	while (i.hasNext())
 	{
 		TreeItem *n = i.next();
-		if (n->edit->text().trimmed().size() == 0)
-			return;
 		QDomElement element = doc.createElement("one" + type);
 		element.setAttribute("name", n->property);
 		element.appendChild(doc.createTextNode(n->edit->text()));
