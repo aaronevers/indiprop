@@ -18,3 +18,5 @@ RCC_DIR = tmp
 HEADERS += src/indiclient.h   src/treewidget.h   src/mainwindow.h
 SOURCES += src/indiclient.cpp src/treewidget.cpp src/mainwindow.cpp src/main.cpp
 
+target.path = $$(OBSHOME)/bin
+INSTALLS += target

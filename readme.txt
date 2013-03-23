@@ -14,18 +14,22 @@ _____________________________________________________________________
 Prerequisites:
 
 Building this program requires a Qt4 development environment.
+Qt4 is available for many platforms including Windows, Mac, and Linux. 
 _____________________________________________________________________
 
-Installation:
+Building:
 
 From the project folder type:
 
 qmake
 make
+_____________________________________________________________________
 
-To install the program, optionally type:
+Installation: 
 
-cp bin/indiprop $OBSHOME/bin/
+If OBSHOME was set, prior to running qmake, install with:
+
+make install
 _____________________________________________________________________
 
 Copyright © 2012 Aaron Evers
