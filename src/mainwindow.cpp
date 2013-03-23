@@ -191,10 +191,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 				dn->widget->setIcon(0, toIcon(state));
 				dn->widget->setToolTip(0, state);
 				if (element.hasAttribute("message"))
-				{
 					dn->widget->setToolTip(0, state + ": " + element.attribute("message"));
-					qout << element.attribute("timestamp") << ", " << device << "." << name << ", \"" << element.attribute("message") << "\"" << endl; 
-				}
 
 				QDomElement child;
 				for (child = element.firstChildElement(); !child.isNull(); child = child.nextSiblingElement())
