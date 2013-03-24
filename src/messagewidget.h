@@ -1,5 +1,5 @@
 /***********************************************************************
- * Copyright © 2012 Aaron Evers
+ * Copyright © 2013 Aaron Evers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,42 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MESSAGEWIDGET_H
+#define MESSAGEWIDGET_H
 
 #include <QtGui>
-#include "indiclient.h"
-#include "treewidget.h"
-#include "messagewidget.h"
 
-class MainWindow : public QMainWindow
+class MessageWidget : public QTextEdit
 {
-    Q_OBJECT;
-
+	Q_OBJECT;
+	
 public:
-	MainWindow(const QMap<QString, QString> &argm);
+	MessageWidget(QWidget *parent = 0);
 
-private:
-	IndiClient mClient;
-	QToolBar *mToolbar;
-	QLineEdit *mHostnameLineEdit;
-	QTreeWidget *mTreeWidget;	
-	QAction *mSexagesimal;
-	MessageWidget *mMessageWidget;
+	void insertMessage(const QString &timestamp, const QString &device, const QString &name, const QString &message);
 
-	QMap<QString, TreeItem*> mTreeWidgetItems;
-    
+	QToolBar *getToolBar(QDockWidget *);
+	QDockWidget *mDockWidget;
 
-protected:
-	virtual void closeEvent(QCloseEvent *);
-	virtual QMenu *createPopupMenu();
+private:	
+	QToolBar *mToolBar;
 
-private slots:
-	void propertyUpdated(QDomDocument);
-	void socketConnect();
-	void sexagesimalToggled();
-	void customContextMenuRequest(const QPoint &);
+public slots:
+	void toggleFloat();
+	
+signals:
+
 };
 
 #endif
-

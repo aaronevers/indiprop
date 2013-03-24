@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
  
- #include "treewidget.h"
+#include "treewidget.h"
 
 TreeItem::TreeItem() : widget(0), min(0), max(0), group(0), button(0), edit(0), disabled(false)
 {

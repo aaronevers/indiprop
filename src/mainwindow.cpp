@@ -56,8 +56,7 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	if (settings.value("Client/ConnectedOnClose", false).toBool())
 		socketConnect();
 
-	mTextEdit = new QTextEdit(this);
-	mTextEdit->setReadOnly(true);
+	mMessageWidget = new MessageWidget(this);
 
 	QDockWidget *browserDock = new QDockWidget("Browser", this);
 	browserDock->setObjectName("BrowserDock");
@@ -65,14 +64,13 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	addDockWidget(Qt::BottomDockWidgetArea, browserDock);
 
 	QDockWidget *messagesDock = new QDockWidget("Messages", this);
+	messagesDock->setTitleBarWidget(mMessageWidget->getToolBar(messagesDock));
 	messagesDock->setObjectName("MessagesDock");
-	messagesDock->setWidget(mTextEdit);
+	messagesDock->setWidget(mMessageWidget);
 	addDockWidget(Qt::TopDockWidgetArea, messagesDock);
-        
-	tabifyDockWidget(browserDock, messagesDock);
-	
-    findChildren<QTabBar *>().at(0)->setCurrentIndex(0);
 
+	tabifyDockWidget(browserDock, messagesDock);
+    findChildren<QTabBar *>().at(0)->setCurrentIndex(0);
 	setDockNestingEnabled(true);
 
 	restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
@@ -210,9 +208,9 @@ void MainWindow::propertyUpdated(QDomDocument doc)
 				dn->widget->setToolTip(0, state);
 				if (element.hasAttribute("message"))
 				{
-					dn->widget->setToolTip(0, state + ": " + element.attribute("message"));
-					QString text = element.attribute("timestamp") + ", " + device + "." + name + ", \"" + element.attribute("message") + "\"\n";
-					mTextEdit->setPlainText(text + mTextEdit->toPlainText());
+					QString message = element.attribute("message");
+					dn->widget->setToolTip(0, state + ": " + message);
+					mMessageWidget->insertMessage(element.attribute("timestamp"), device, name, message);
 				}
 
 				QDomElement child;
