@@ -1,5 +1,5 @@
 /***********************************************************************
- * Copyright © 2012 Aaron Evers
+ * Copyright © 2013 Aaron Evers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,31 +21,8 @@ MessageWidget::MessageWidget(QWidget *parent) : QTextEdit(parent)
 	setReadOnly(true);
 }
 
-QToolBar *MessageWidget::getToolBar(QDockWidget *dock)
-{
-	mDockWidget = dock;
-	mToolBar = new QToolBar("Message Tools", this);
-	mToolBar->addWidget(new QLabel("Messages", this));
-	mToolBar->addAction("Clear", this, SLOT(clear()));
-	mToolBar->addWidget(new QSplitter(Qt::Horizontal, this));
-	
-	QAction *fAction = new QAction(style()->standardIcon(QStyle::SP_TitleBarNormalButton), "Float", this);
-	connect(fAction, SIGNAL(triggered()), SLOT(toggleFloat()));
-	
-	mToolBar->addAction(style()->standardIcon(QStyle::SP_TitleBarNormalButton), "Float", this, SLOT(toggleFloat()));
-	mToolBar->addAction(style()->standardIcon(QStyle::SP_TitleBarCloseButton), "Close", dock, SLOT(close()));
-	
-	return mToolBar;
-}
-
 void MessageWidget::insertMessage(const QString &timestamp, const QString &device, const QString &name, const QString &message)
 {
 	QString text = timestamp + ", " + device + "." + name + ", \"" + message + "\"\n";
 	setPlainText(text + toPlainText());	
-}
-
-void MessageWidget::toggleFloat()
-{
-	if (mDockWidget)
-		mDockWidget->setFloating(!mDockWidget->isFloating());
 }

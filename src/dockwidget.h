@@ -14,24 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#ifndef MESSAGEWIDGET_H
-#define MESSAGEWIDGET_H
+#ifndef DOCKWIDGET_H
+#define DOCKWIDGET_H
 
 #include <QtGui>
 
-class MessageWidget : public QTextEdit
+class DockWidget : public QDockWidget
 {
 	Q_OBJECT;
 	
 public:
-	MessageWidget(QWidget *parent = 0);
+	DockWidget(const QString &name, QMainWindow *parent = 0);
 
-	void insertMessage(const QString &timestamp, const QString &device, const QString &name, const QString &message);
+	void insertToolAction(const QString & text, QObject * receiver, const char * member);
 
 private:	
+	QToolBar *mToolBar;
+	QMainWindow *mw;
+	QAction *mAction;
 
 public slots:
-	
+	void toggleFloat();
+	void customContextMenuRequest(const QPoint &p);
+
 signals:
 
 };

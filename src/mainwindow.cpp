@@ -15,6 +15,7 @@
  ***********************************************************************/
 
 #include "mainwindow.h"
+#include "dockwidget.h"
 
 MainWindow::MainWindow(const QMap<QString, QString> &argm)
 {
@@ -58,15 +59,13 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 
 	mMessageWidget = new MessageWidget(this);
 
-	QDockWidget *browserDock = new QDockWidget("Browser", this);
-	browserDock->setObjectName("BrowserDock");
+	DockWidget *browserDock = new DockWidget("Browser", this);
 	browserDock->setWidget(mTreeWidget);
 	addDockWidget(Qt::BottomDockWidgetArea, browserDock);
 
-	QDockWidget *messagesDock = new QDockWidget("Messages", this);
-	messagesDock->setTitleBarWidget(mMessageWidget->getToolBar(messagesDock));
-	messagesDock->setObjectName("MessagesDock");
+	DockWidget *messagesDock = new DockWidget("Messages", this);
 	messagesDock->setWidget(mMessageWidget);
+	messagesDock->insertToolAction("Clear", mMessageWidget, SLOT(clear()));
 	addDockWidget(Qt::TopDockWidgetArea, messagesDock);
 
 	tabifyDockWidget(browserDock, messagesDock);
