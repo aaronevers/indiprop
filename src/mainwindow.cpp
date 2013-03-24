@@ -22,6 +22,10 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 
 	setWindowTitle(qApp->applicationName() + " " + qApp->applicationVersion());
 	setObjectName(windowTitle());
+	setGeometry(200, 300, 600, 500);
+
+	if (argm.contains("clear-cache"))
+		settings.clear();
 
     QString host = settings.value("Toolbar/Hostname").toString();
     if (argm.contains("host"))
@@ -34,7 +38,6 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	mToolbar->addWidget(mHostnameLineEdit);
 	mToolbar->addAction("Connect", this, SLOT(socketConnect()));
 	connect(mHostnameLineEdit, SIGNAL(returnPressed()), SLOT(socketConnect()));
-
 	
 	mTreeWidget = new QTreeWidget(this);
 	mTreeWidget->setObjectName(windowTitle() + " treewidget");
@@ -53,23 +56,27 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	if (settings.value("Client/ConnectedOnClose", false).toBool())
 		socketConnect();
 
-	QDockWidget *dock = new QDockWidget("Browser", this);
-	dock->setObjectName("BrowserDock");
-	dock->setWidget(mTreeWidget);
-	addDockWidget(Qt::TopDockWidgetArea, dock);
-
 	mTextEdit = new QTextEdit(this);
 	mTextEdit->setReadOnly(true);
 
-	dock = new QDockWidget("Messages", this);
-	dock->setObjectName("MessagesDock");
-	dock->setWidget(mTextEdit);
-	addDockWidget(Qt::TopDockWidgetArea, dock);
+	QDockWidget *browserDock = new QDockWidget("Browser", this);
+	browserDock->setObjectName("BrowserDock");
+	browserDock->setWidget(mTreeWidget);
+	addDockWidget(Qt::BottomDockWidgetArea, browserDock);
+
+	QDockWidget *messagesDock = new QDockWidget("Messages", this);
+	messagesDock->setObjectName("MessagesDock");
+	messagesDock->setWidget(mTextEdit);
+	addDockWidget(Qt::TopDockWidgetArea, messagesDock);
+        
+	tabifyDockWidget(browserDock, messagesDock);
+	
+    findChildren<QTabBar *>().at(0)->setCurrentIndex(0);
+
+	setDockNestingEnabled(true);
 
 	restoreState(settings.value("MainWindow/State", saveState()).toByteArray());
 	restoreGeometry(settings.value("MainWindow/Geometry", saveGeometry()).toByteArray());
-	
-	setDockNestingEnabled(true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *)

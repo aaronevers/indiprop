@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 {
 	QApplication app(argc, argv);
 	app.setApplicationName("indiprop");
-	app.setApplicationVersion("1.01");
+	app.setApplicationVersion("1.02");
 	app.setOrganizationName("indiprop.googlecode.com");
 	app.setOrganizationDomain("indiprop.googlecode.com");
 
@@ -36,7 +36,8 @@ int main(int argc, char *argv[])
         qout << "Usage: " << qApp->applicationName() << " [options]" << endl;
         qout << "Where [options] are the following:" << endl;
         qout << "  -h|--help                Prints this help statement." << endl;
-        qout << "  --host=<host>[:<port>]   Overrides the cached host string." << endl;
+        qout << "  --host=<host[:port]>     Overrides the cached host string." << endl;
+        qout << "  --clear-cache            Clears all cached settings." << endl;
         qout << endl;
         return false;
     }
