@@ -26,6 +26,8 @@ class DockWidget : public QDockWidget
 public:
 	DockWidget(const QString &name, QMainWindow *parent = 0);
 
+	void insertSeparator();
+	void insertWidget(QWidget *w);
 	void insertToolAction(const QString & text, QObject * receiver, const char * member);
 
 private:	

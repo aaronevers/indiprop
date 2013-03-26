@@ -18,19 +18,32 @@
 #define MESSAGEWIDGET_H
 
 #include <QtGui>
+#include "dockwidget.h"
 
-class MessageWidget : public QTextEdit
+class MessageWidget : public DockWidget
 {
 	Q_OBJECT;
 	
 public:
-	MessageWidget(QWidget *parent = 0);
+	MessageWidget(QMainWindow *parent);
+	~MessageWidget();
 
 	void insertMessage(const QString &timestamp, const QString &device, const QString &name, const QString &message);
 
 private:	
+	QStringList mStringList;
+	QTextEdit *mTextEdit;
+	
+	QString mRegex;	
+	QLineEdit *mRegexEdit;
+
+	int mMaxLines;	
+	QLineEdit *mLineCountEdit;
 
 public slots:
+	void clear();
+	void updateRegex();
+	void updateMaxLines();
 	
 signals:
 

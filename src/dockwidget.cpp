@@ -48,17 +48,40 @@ public:
 	QAction *action;
 };
 
+class ToolBar : public QToolBar
+{
+public:
+	ToolBar(const QString &name) : QToolBar(name), mLabel(new QLabel(name))
+	{
+		addWidget(mLabel);	
+
+		QFont f = font();
+		f.setPointSize(f.pointSize() - 2);
+		QLineEdit e;
+		e.setFont(f);
+		size = e.sizeHint();
+	}
+	
+	virtual QSize sizeHint() const
+	{
+		return size;
+	}
+	
+private:
+	QLabel *mLabel;
+	QSize size;
+};
+
 DockWidget::DockWidget(const QString &name, QMainWindow *parent) : QDockWidget(name, parent), mw(parent)
 {
 	setObjectName(name);
 
-	mToolBar = new QToolBar(name);
-	mToolBar->addWidget(new QLabel(name));	
-	mAction = mToolBar->addWidget(new QSplitter(Qt::Horizontal));	
+	mToolBar = new ToolBar(name);
+	mToolBar->addWidget(new QSplitter(Qt::Horizontal));	
 
 	ToolButton *fb = new ToolButton(style()->standardIcon(QStyle::SP_TitleBarNormalButton), "Float", this);
 	connect(fb->action, SIGNAL(triggered()), SLOT(toggleFloat()));
-	mToolBar->addWidget(fb);
+	mAction = mToolBar->addWidget(fb);
 	
 	ToolButton *cb = new ToolButton(style()->standardIcon(QStyle::SP_TitleBarCloseButton), "Close", this);
 	connect(cb->action, SIGNAL(triggered()), SLOT(close()));
@@ -70,9 +93,27 @@ DockWidget::DockWidget(const QString &name, QMainWindow *parent) : QDockWidget(n
 	connect(mToolBar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(customContextMenuRequest(const QPoint &)));
 }
 
-void DockWidget::insertToolAction(const QString & text, QObject * receiver, const char * member)
+void DockWidget::insertSeparator()
 {
+	mToolBar->insertSeparator(mAction);
+}
+
+void DockWidget::insertWidget(QWidget *w)
+{
+	QFont f = font();
+	f.setPointSize(f.pointSize() - 2);
+	w->setFont(f);
+	
+	mToolBar->insertWidget(mAction, w);
+}
+
+void DockWidget::insertToolAction(const QString &text, QObject *receiver, const char *member)
+{
+	QFont f = font();
+	f.setPointSize(f.pointSize() - 2);
+
 	ToolButton *b = new ToolButton(text, receiver);
+	b->setFont(f);
 	connect(b->action, SIGNAL(triggered()), receiver, member);
 	mToolBar->insertWidget(mAction, b);
 }

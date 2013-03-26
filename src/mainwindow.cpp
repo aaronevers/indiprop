@@ -57,18 +57,14 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm)
 	if (settings.value("Client/ConnectedOnClose", false).toBool())
 		socketConnect();
 
-	mMessageWidget = new MessageWidget(this);
-
 	DockWidget *browserDock = new DockWidget("Browser", this);
 	browserDock->setWidget(mTreeWidget);
 	addDockWidget(Qt::BottomDockWidgetArea, browserDock);
 
-	DockWidget *messagesDock = new DockWidget("Messages", this);
-	messagesDock->setWidget(mMessageWidget);
-	messagesDock->insertToolAction("Clear", mMessageWidget, SLOT(clear()));
-	addDockWidget(Qt::TopDockWidgetArea, messagesDock);
+	mMessageWidget = new MessageWidget(this);
+	addDockWidget(Qt::TopDockWidgetArea, mMessageWidget);
 
-	tabifyDockWidget(browserDock, messagesDock);
+	tabifyDockWidget(browserDock, mMessageWidget);
     findChildren<QTabBar *>().at(0)->setCurrentIndex(0);
 	setDockNestingEnabled(true);
 

@@ -16,13 +16,81 @@
  
 #include "messagewidget.h"
 
-MessageWidget::MessageWidget(QWidget *parent) : QTextEdit(parent)
+MessageWidget::MessageWidget(QMainWindow *parent) : 
+	DockWidget("Messages", parent)
 {
-	setReadOnly(true);
+	QSettings settings;
+	
+	mTextEdit = new QTextEdit();
+	mTextEdit->setReadOnly(true);
+	setWidget(mTextEdit);
+
+	insertWidget(new QLabel("Regex:"));
+	mRegex = settings.value("MessageToolbar/Regex").toString();	
+
+	mRegexEdit = new QLineEdit(mRegex);
+	insertWidget(mRegexEdit);
+	insertSeparator();
+
+	connect(mRegexEdit, SIGNAL(editingFinished()), SLOT(updateRegex()));
+
+	insertWidget(new QLabel("Max Lines:"));
+	mMaxLines = settings.value("MessageToolbar/MaxLines", "50").toInt();	
+	
+	mLineCountEdit = new QLineEdit(QString("%1").arg(mMaxLines));
+	mLineCountEdit->setMaximumWidth(40);
+	insertWidget(mLineCountEdit);
+	insertSeparator();
+	
+	connect(mLineCountEdit, SIGNAL(editingFinished()), SLOT(updateMaxLines()));
+
+	insertToolAction("Clear", this, SLOT(clear()));
+}
+
+MessageWidget::~MessageWidget()
+{
+	QSettings settings;
+	settings.setValue("MessageToolbar/MaxLines", mMaxLines);
+	settings.setValue("MessageToolbar/Regex", mRegex);
 }
 
 void MessageWidget::insertMessage(const QString &timestamp, const QString &device, const QString &name, const QString &message)
 {
-	QString text = timestamp + ", " + device + "." + name + ", \"" + message + "\"\n";
-	setPlainText(text + toPlainText());	
+	QString text = timestamp + ", " + device + "." + name + ", \"" + message + "\"";
+	mStringList.prepend(text);
+	
+	if (mRegex.size())
+		mStringList = mStringList.filter(QRegExp(mRegex));
+	
+	while (mStringList.size() > mMaxLines)
+		mStringList.removeLast();
+	
+	mTextEdit->setText(mStringList.join("\n"));	
 }
+
+void MessageWidget::clear()
+{
+	mStringList.clear();
+	mTextEdit->setText(mStringList.join("\n"));	
+}
+
+void MessageWidget::updateRegex()
+{
+	mRegex = mRegexEdit->text();
+
+	if (mRegex.size())
+		mStringList = mStringList.filter(QRegExp(mRegex));
+
+	mTextEdit->setText(mStringList.join("\n"));	
+}
+
+void MessageWidget::updateMaxLines()
+{
+	mMaxLines = mLineCountEdit->text().toInt();
+
+	while (mStringList.size() > mMaxLines)
+		mStringList.removeLast();
+
+	mTextEdit->setText(mStringList.join("\n"));	
+}
+
