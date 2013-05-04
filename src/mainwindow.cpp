@@ -20,7 +20,7 @@
 extern QTextStream qout;
 
 MainWindow::MainWindow(const QMap<QString, QString> &argm):
-    mXml(false)
+    mClient(3), mXml(false)
 {
     QSettings settings;
 

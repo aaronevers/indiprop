@@ -18,7 +18,7 @@
 
 extern QTextStream qout;
 
-IndiClient::IndiClient() : mPort(indi::PORT)
+IndiClient::IndiClient(const int &attempts) : mPort(indi::PORT), mAttempts(attempts), mAttempt(1)
 {
     connect(&mQTcpSocket, SIGNAL(connected()), SLOT(socketConnected()));
     connect(&mQTcpSocket, SIGNAL(disconnected()), SLOT(socketDisconnected()));
@@ -28,6 +28,7 @@ IndiClient::IndiClient() : mPort(indi::PORT)
 
 void IndiClient::socketConnect(const QString &hoststring)
 {
+    mHost = hoststring;
     mPort = indi::PORT;
 
     QStringList hostsplit = hoststring.split(":");
@@ -39,6 +40,11 @@ void IndiClient::socketConnect(const QString &hoststring)
         mQTcpSocket.disconnectFromHost();
         mQTcpSocket.connectToHost(hostsplit[0], mPort);
     }
+}
+
+void IndiClient::reconnect()
+{
+    socketConnect(mHost);
 }
 
 void IndiClient::socketConnected()
@@ -66,8 +72,23 @@ void IndiClient::socketDisconnected()
 
 void IndiClient::socketError(QAbstractSocket::SocketError)
 {
-    qout << "Socket error from indiserver@" << mQTcpSocket.peerName() << ":" << mPort
-        << " (" << mQTcpSocket.errorString() << ")" << endl;
+    if (mQTcpSocket.error() == QAbstractSocket::RemoteHostClosedError)
+    {
+        mAttempt = 1;
+        qout << "The remote host closed the connection.  Attempting to reconnect..." << endl;
+        QTimer::singleShot(1000, this, SLOT(reconnect()));
+    }
+    else if (mQTcpSocket.error() == QAbstractSocket::ConnectionRefusedError && mAttempt < mAttempts)
+    {
+        mAttempt++;
+        qout << "Attempting to reconnect..." << endl;
+        QTimer::singleShot(1000, this, SLOT(reconnect()));
+    }
+    else
+    {
+        qout << "Socket error from indiserver@" << mQTcpSocket.peerName() << ":" << mPort
+            << " (" << mQTcpSocket.errorString() << ")" << endl;
+    }
 }
 
 void IndiClient::sendProperty(QDomDocument doc)

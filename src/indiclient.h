@@ -37,7 +37,7 @@ class IndiClient : public QObject
     Q_OBJECT;
 
 public:
-    IndiClient();
+    IndiClient(const int &attempts);
     void socketConnect(const QString &hoststring);
     bool connected();
 
@@ -46,11 +46,15 @@ public:
 private:
     quint16 mPort;
     QTcpSocket mQTcpSocket;
+    QString mHost;
+    int mAttempts;
+    int mAttempt;
 
 signals:
     void propertyUpdate(QDomDocument);
 
 private slots:
+    void reconnect();
     void socketConnected();
     void socketDisconnected();
     void socketError(QAbstractSocket::SocketError);
@@ -62,4 +66,3 @@ public slots:
 };
 
 #endif
-
