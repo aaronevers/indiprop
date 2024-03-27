@@ -93,7 +93,7 @@ void IndiClient::socketError(QAbstractSocket::SocketError)
 
 void IndiClient::sendProperty(QDomDocument doc)
 {
-    mQTcpSocket.write(doc.toString().toAscii());
+    mQTcpSocket.write(doc.toString().toLatin1());
 }
 
 void IndiClient::socketReadyRead()
@@ -162,7 +162,7 @@ QString IndiClient::formatNumber(const QString &format, const QString &number, c
             QString f = format;
             f.replace('m', 'f');
 
-            text = text.sprintf(f.toAscii(), text.toDouble()).trimmed();
+            text = text.sprintf(f.toLatin1(), text.toDouble()).trimmed();
         }
     }
 
