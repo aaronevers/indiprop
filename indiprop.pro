@@ -4,7 +4,7 @@ TEMPLATE = app
 
 CONFIG += thread console
 
-QT += network xml
+QT += network xml widgets
 
 DESTDIR = bin
 

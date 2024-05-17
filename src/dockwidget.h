@@ -17,7 +17,7 @@
 #ifndef DOCKWIDGET_H
 #define DOCKWIDGET_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 class DockWidget : public QDockWidget
 {

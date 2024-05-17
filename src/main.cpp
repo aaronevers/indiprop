@@ -34,15 +34,15 @@ int main(int argc, char *argv[])
 
     if (args.contains("-h") || args.contains("--help"))
     {
-        qout << qApp->applicationName() << " " << qApp->applicationVersion() << endl;
-        qout << "Usage: " << qApp->applicationName() << " [options]" << endl;
-        qout << "Where [options] are the following:" << endl;
-        qout << "  -h|--help                Prints this help statement." << endl;
-        qout << "  --host=<host[:port]>     Overrides the cached host string." << endl;
-        qout << "  --clear-cache            Clears all cached settings." << endl;
-        qout << "  --xml                    Shows xml properties via stdout." << endl;
-        qout << endl;
-        return false;
+        qout << qApp->applicationName() << " " << qApp->applicationVersion() << Qt::endl;
+        qout << "Usage: " << qApp->applicationName() << " [options]" << Qt::endl;
+        qout << "Where [options] are the following:" << Qt::endl;
+        qout << "  -h|--help                Prints this help statement." << Qt::endl;
+        qout << "  --host=<host[:port]>     Overrides the cached host string." << Qt::endl;
+        qout << "  --clear-cache            Clears all cached settings." << Qt::endl;
+        qout << "  --xml                    Shows xml properties via stdout." << Qt::endl;
+        qout << Qt::endl;
+        return 1;
     }
 
     MainWindow mainWindow(argm);
