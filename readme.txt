@@ -1,4 +1,4 @@
-indiprop - INDI Property Browser - v1.01
+indiprop - INDI Property Browser - v1.03
 _____________________________________________________________________
 
 This program provides a generic user interface for browsing device 
@@ -13,21 +13,21 @@ _____________________________________________________________________
 
 Prerequisites:
 
-Building this program requires a Qt4 development environment.
-Qt4 is available for many platforms including Windows, Mac, and Linux. 
+Building this program requires a Qt6 development environment.
+Qt6 is available for many platforms including Windows, Mac, and Linux. 
 _____________________________________________________________________
 
 Building:
 
 From the project folder type:
 
-qmake
+qmake6
 make
 _____________________________________________________________________
 
 Installation: 
 
-If OBSHOME was set, prior to running qmake, install with:
+Installs to $OBSHOME directory with the following:
 
 make install
 _____________________________________________________________________
@@ -46,3 +46,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see [http://www.gnu.org/licenses/].
 _____________________________________________________________________
+
+Changelog:
+
+v1.03 - Updated to build with Qt6
+
+v1.02 - Added --xml option to dump raw indi xml to stdout
+
+v1.01 - Added message pane
+
+v1.00 - Initial release
