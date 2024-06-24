@@ -133,7 +133,7 @@ QIcon toIcon(const QString &status)
 void MainWindow::propertyUpdated(QDomDocument doc)
 {
     if (mXml)
-        qout << doc.toString(2) << endl;
+        qout << doc.toString(2) << Qt::endl;
 
     QSettings settings;
 

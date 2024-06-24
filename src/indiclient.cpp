@@ -49,7 +49,7 @@ void IndiClient::reconnect()
 
 void IndiClient::socketConnected()
 {
-    qout << "Connected to indiserver@" << mQTcpSocket.peerName() << ":" << mPort << endl;
+    qout << "Connected to indiserver@" << mQTcpSocket.peerName() << ":" << mPort << Qt::endl;
 
     /* Subscribe to all properties */
     QDomDocument doc("");
@@ -67,7 +67,7 @@ bool IndiClient::connected()
 
 void IndiClient::socketDisconnected()
 {
-    qout << "Disconnected from indiserver@" << mQTcpSocket.peerName() << ":" << mPort << endl;
+    qout << "Disconnected from indiserver@" << mQTcpSocket.peerName() << ":" << mPort << Qt::endl;
 }
 
 void IndiClient::socketError(QAbstractSocket::SocketError)
@@ -75,25 +75,25 @@ void IndiClient::socketError(QAbstractSocket::SocketError)
     if (mQTcpSocket.error() == QAbstractSocket::RemoteHostClosedError)
     {
         mAttempt = 1;
-        qout << "The remote host closed the connection.  Attempting to reconnect..." << endl;
+        qout << "The remote host closed the connection.  Attempting to reconnect..." << Qt::endl;
         QTimer::singleShot(1000, this, SLOT(reconnect()));
     }
     else if (mQTcpSocket.error() == QAbstractSocket::ConnectionRefusedError && mAttempt < mAttempts)
     {
         mAttempt++;
-        qout << "Attempting to reconnect..." << endl;
+        qout << "Attempting to reconnect..." << Qt::endl;
         QTimer::singleShot(1000, this, SLOT(reconnect()));
     }
     else
     {
         qout << "Socket error from indiserver@" << mQTcpSocket.peerName() << ":" << mPort
-            << " (" << mQTcpSocket.errorString() << ")" << endl;
+            << " (" << mQTcpSocket.errorString() << ")" << Qt::endl;
     }
 }
 
 void IndiClient::sendProperty(QDomDocument doc)
 {
-    mQTcpSocket.write(doc.toString().toAscii());
+    mQTcpSocket.write(doc.toByteArray());
 }
 
 void IndiClient::socketReadyRead()
@@ -162,7 +162,7 @@ QString IndiClient::formatNumber(const QString &format, const QString &number, c
             QString f = format;
             f.replace('m', 'f');
 
-            text = text.sprintf(f.toAscii(), text.toDouble()).trimmed();
+            text = QString::asprintf(f.toStdString().c_str(), text.toDouble()).trimmed();
         }
     }
 

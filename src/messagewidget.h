@@ -17,7 +17,7 @@
 #ifndef MESSAGEWIDGET_H
 #define MESSAGEWIDGET_H
 
-#include <QtGui>
+#include <QtWidgets>
 #include "dockwidget.h"
 
 class MessageWidget : public DockWidget

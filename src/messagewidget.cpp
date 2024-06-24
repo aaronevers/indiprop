@@ -60,7 +60,7 @@ void MessageWidget::insertMessage(const QString &timestamp, const QString &devic
 	mStringList.prepend(text);
 	
 	if (mRegex.size())
-		mStringList = mStringList.filter(QRegExp(mRegex));
+        mStringList = mStringList.filter(QRegularExpression(mRegex));
 	
 	while (mStringList.size() > mMaxLines)
 		mStringList.removeLast();
@@ -79,7 +79,7 @@ void MessageWidget::updateRegex()
 	mRegex = mRegexEdit->text();
 
 	if (mRegex.size())
-		mStringList = mStringList.filter(QRegExp(mRegex));
+        mStringList = mStringList.filter(QRegularExpression(mRegex));
 
 	mTextEdit->setText(mStringList.join("\n"));	
 }
