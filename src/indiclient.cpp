@@ -162,7 +162,7 @@ QString IndiClient::formatNumber(const QString &format, const QString &number, c
             QString f = format;
             f.replace('m', 'f');
 
-            text = QString::asprintf(f.toStdString().c_str(), text.toDouble()).trimmed();
+            text = QString::asprintf(f.toLatin1(), text.toDouble()).trimmed();
         }
     }
 
