@@ -44,21 +44,21 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm):
     mToolbar->addWidget(new QLabel("Host:"));
     mToolbar->addWidget(mHostnameLineEdit);
     mToolbar->addAction("Connect", this, SLOT(socketConnect()));
-    connect(mHostnameLineEdit, SIGNAL(returnPressed()), SLOT(socketConnect()));
+    connect(mHostnameLineEdit, &QLineEdit::returnPressed, this, &MainWindow::socketConnect);
 
     mTreeWidget = new QTreeWidget(this);
     mTreeWidget->setObjectName(windowTitle() + " treewidget");
     mTreeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     mTreeWidget->setHeaderLabels(QStringList() << "Property" << "Value" << "" << "Label");
     mTreeWidget->header()->restoreState(settings.value("TreeWidgetHeader/State", mTreeWidget->header()->saveState()).toByteArray());
-    connect(mTreeWidget, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(customContextMenuRequest(const QPoint &)));
+    connect(mTreeWidget, &QTreeWidget::customContextMenuRequested, this, &MainWindow::customContextMenuRequest);
 
     mSexagesimal = new QAction("Show Sexagesimal", this);
     mSexagesimal->setCheckable(true);
     mSexagesimal->setChecked(settings.value("Sexigesimal", true).toBool());
-    connect(mSexagesimal, SIGNAL(triggered()), SLOT(sexagesimalToggled()));
+    connect(mSexagesimal, &QAction::triggered, this, &MainWindow::sexagesimalToggled);
 
-    connect(&mClient, SIGNAL(propertyUpdate(QDomDocument)), SLOT(propertyUpdated(QDomDocument)));
+    connect(&mClient, &IndiClient::propertyUpdate, this, &MainWindow::propertyUpdated);
 
     if (settings.value("Client/ConnectedOnClose", false).toBool())
         socketConnect();
@@ -195,15 +195,15 @@ void MainWindow::propertyUpdated(QDomDocument doc)
                             else
                                 dn->group->setExclusive(false);
 
-                            connect(dn->group, SIGNAL(buttonClicked(QAbstractButton *)), dn, SLOT(groupClicked(QAbstractButton *)));
+                            connect(dn->group, &QButtonGroup::buttonClicked, dn, &TreeItem::groupClicked);
                         }
                         else
                         {
                             dn->button = new QPushButton(name);
-                            connect(dn->button, SIGNAL(clicked()), dn, SLOT(editClicked()));
+                            connect(dn->button, &QAbstractButton::clicked, dn, &TreeItem::editClicked);
                         }
 
-                        connect(dn, SIGNAL(propertyUpdated(QDomDocument)), &mClient, SLOT(sendProperty(QDomDocument)));
+                        connect(dn, &TreeItem::propertyUpdated, &mClient, &IndiClient::sendProperty);
                     }
                 }
 
@@ -259,7 +259,7 @@ void MainWindow::propertyUpdated(QDomDocument doc)
                             {
                                 dnp->edit = new QLineEdit;
                                 mTreeWidget->setItemWidget(dnp->widget, 2, dnp->edit);
-                                connect(dnp->edit, SIGNAL(returnPressed()), dn, SLOT(editClicked()));
+                                connect(dnp->edit, &QLineEdit::returnPressed, dn, &TreeItem::editClicked);
                             }
                         }
 

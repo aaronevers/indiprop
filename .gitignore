@@ -2,3 +2,6 @@ bin/
 tmp/
 *~
 Makefile
+.qmake.stash
+.qtc_clangd
+*.pro.user

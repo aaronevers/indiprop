@@ -19,16 +19,16 @@
 class ToolButton : public QToolButton
 {
 public:
-	ToolButton(const QIcon &icon, const QString &text, QObject *parent):
+    ToolButton(const QIcon &icon, const QString &text, QObject *parent):
 		icon(true),
-		action(new QAction(icon, text, parent))
+        action(new QAction(icon, text, parent))
 	{
 		setDefaultAction(action);
 	}
 	
-	ToolButton(const QString &text, QObject *parent):
+    ToolButton(const QString &text, QObject *parent):
 		icon(false),
-		action(new QAction(text, parent))
+        action(new QAction(text, parent))
 	{
 		setDefaultAction(action);
 	}
@@ -77,20 +77,20 @@ DockWidget::DockWidget(const QString &name, QMainWindow *parent) : QDockWidget(n
 	setObjectName(name);
 
 	mToolBar = new ToolBar(name);
-	mToolBar->addWidget(new QSplitter(Qt::Horizontal));	
+    mToolBar->addWidget(new QSplitter(Qt::Horizontal));
 
-	ToolButton *fb = new ToolButton(style()->standardIcon(QStyle::SP_TitleBarNormalButton), "Float", this);
-	connect(fb->action, SIGNAL(triggered()), SLOT(toggleFloat()));
+    ToolButton *fb = new ToolButton(style()->standardIcon(QStyle::SP_TitleBarNormalButton), "Float", this);
+    connect(fb->action, &QAction::triggered, this, &DockWidget::toggleFloat);
 	mAction = mToolBar->addWidget(fb);
 	
 	ToolButton *cb = new ToolButton(style()->standardIcon(QStyle::SP_TitleBarCloseButton), "Close", this);
-	connect(cb->action, SIGNAL(triggered()), SLOT(close()));
+    connect(cb->action, &QAction::triggered, this, &DockWidget::close);
 	mToolBar->addWidget(cb);
 	
 	setTitleBarWidget(mToolBar);
 
 	mToolBar->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(mToolBar, SIGNAL(customContextMenuRequested(const QPoint &)), SLOT(customContextMenuRequest(const QPoint &)));
+    connect(mToolBar, &ToolBar::customContextMenuRequested, this, &DockWidget::customContextMenuRequest);
 }
 
 void DockWidget::insertSeparator()

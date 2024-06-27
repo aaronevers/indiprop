@@ -32,7 +32,7 @@ MessageWidget::MessageWidget(QMainWindow *parent) :
 	insertWidget(mRegexEdit);
 	insertSeparator();
 
-	connect(mRegexEdit, SIGNAL(editingFinished()), SLOT(updateRegex()));
+    connect(mRegexEdit, &QLineEdit::editingFinished, this, &MessageWidget::updateRegex);
 
 	insertWidget(new QLabel("Max Lines:"));
 	mMaxLines = settings.value("MessageToolbar/MaxLines", "50").toInt();	
@@ -42,7 +42,7 @@ MessageWidget::MessageWidget(QMainWindow *parent) :
 	insertWidget(mLineCountEdit);
 	insertSeparator();
 	
-	connect(mLineCountEdit, SIGNAL(editingFinished()), SLOT(updateMaxLines()));
+    connect(mLineCountEdit, &QLineEdit::editingFinished, this, &MessageWidget::updateMaxLines);
 
 	insertToolAction("Clear", this, SLOT(clear()));
 }

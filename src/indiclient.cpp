@@ -20,10 +20,10 @@ extern QTextStream qout;
 
 IndiClient::IndiClient(const int &attempts) : mPort(indi::PORT), mAttempts(attempts), mAttempt(1)
 {
-    connect(&mQTcpSocket, SIGNAL(connected()), SLOT(socketConnected()));
-    connect(&mQTcpSocket, SIGNAL(disconnected()), SLOT(socketDisconnected()));
-    connect(&mQTcpSocket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(socketError(QAbstractSocket::SocketError)));
-    connect(&mQTcpSocket, SIGNAL(readyRead()), SLOT(socketReadyRead()));
+    connect(&mQTcpSocket, &QTcpSocket::connected, this, &IndiClient::socketConnected);
+    connect(&mQTcpSocket, &QTcpSocket::disconnected, this, &IndiClient::socketDisconnected);
+    connect(&mQTcpSocket, &QTcpSocket::errorOccurred, this, &IndiClient::socketError);
+    connect(&mQTcpSocket, &QTcpSocket::readyRead, this, &IndiClient::socketReadyRead);
 }
 
 void IndiClient::socketConnect(const QString &hoststring)
@@ -76,13 +76,13 @@ void IndiClient::socketError(QAbstractSocket::SocketError)
     {
         mAttempt = 1;
         qout << "The remote host closed the connection.  Attempting to reconnect..." << Qt::endl;
-        QTimer::singleShot(1000, this, SLOT(reconnect()));
+        QTimer::singleShot(1000, this, &IndiClient::reconnect);
     }
     else if (mQTcpSocket.error() == QAbstractSocket::ConnectionRefusedError && mAttempt < mAttempts)
     {
         mAttempt++;
         qout << "Attempting to reconnect..." << Qt::endl;
-        QTimer::singleShot(1000, this, SLOT(reconnect()));
+        QTimer::singleShot(1000, this, &IndiClient::reconnect);
     }
     else
     {
