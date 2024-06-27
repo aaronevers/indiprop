@@ -107,15 +107,16 @@ void DockWidget::insertWidget(QWidget *w)
 	mToolBar->insertWidget(mAction, w);
 }
 
-void DockWidget::insertToolAction(const QString &text, QObject *receiver, const char *member)
+QAction *DockWidget::insertToolAction(const QString &text, QObject *receiver)
 {
 	QFont f = font();
 	f.setPointSize(f.pointSize() - 2);
 
 	ToolButton *b = new ToolButton(text, receiver);
 	b->setFont(f);
-	connect(b->action, SIGNAL(triggered()), receiver, member);
 	mToolBar->insertWidget(mAction, b);
+
+    return b->action;
 }
 
 void DockWidget::toggleFloat()

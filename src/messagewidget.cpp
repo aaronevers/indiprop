@@ -44,7 +44,8 @@ MessageWidget::MessageWidget(QMainWindow *parent) :
 	
     connect(mLineCountEdit, &QLineEdit::editingFinished, this, &MessageWidget::updateMaxLines);
 
-	insertToolAction("Clear", this, SLOT(clear()));
+    QAction *a = insertToolAction("Clear", this);
+    connect(a, &QAction::triggered, this, &MessageWidget::clear);
 }
 
 MessageWidget::~MessageWidget()
