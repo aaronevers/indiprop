@@ -19,3 +19,5 @@ SOURCES += src/indiclient.cpp src/mainwindow.cpp src/messagewidget.cpp src/dockw
 
 target.path = $$(OBSHOME)/bin
 INSTALLS += target
+
+DISTFILES += readme.txt

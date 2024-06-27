@@ -1,4 +1,4 @@
-indiprop - INDI Property Browser - v1.03
+indiprop - INDI Property Browser - v1.04
 _____________________________________________________________________
 
 This program provides a generic user interface for browsing device 
@@ -48,6 +48,8 @@ along with this program.  If not, see [http://www.gnu.org/licenses/].
 _____________________________________________________________________
 
 Changelog:
+
+v1.04 - Removed obsolete use of SIGNAL/SLOT macros
 
 v1.03 - Updated to build with Qt6
 
