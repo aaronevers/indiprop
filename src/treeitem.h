@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ***********************************************************************/
 
-#ifndef TREEWIDGET_H
-#define TREEWIDGET_H
+#ifndef TREEITEM_H
+#define TREEITEM_H
 
 #include <QtWidgets>
 #include <QtXml>

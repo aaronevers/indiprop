@@ -19,7 +19,7 @@
 
 #include <QtWidgets>
 #include "indiclient.h"
-#include "treewidget.h"
+#include "treeitem.h"
 #include "messagewidget.h"
 
 class MainWindow : public QMainWindow
