@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
         qout << "  --clear-cache            Clears all cached settings." << Qt::endl;
         qout << "  --xml                    Shows xml properties via stdout." << Qt::endl;
         qout << Qt::endl;
-        return false;
+        return 0;
     }
 
     MainWindow mainWindow(argm);

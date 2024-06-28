@@ -43,7 +43,7 @@ MainWindow::MainWindow(const QMap<QString, QString> &argm):
     mToolbar->setObjectName(mToolbar->windowTitle());
     mToolbar->addWidget(new QLabel("Host:"));
     mToolbar->addWidget(mHostnameLineEdit);
-    mToolbar->addAction("Connect", this, SLOT(socketConnect()));
+    mToolbar->addAction("Connect", this, &MainWindow::socketConnect);
     connect(mHostnameLineEdit, &QLineEdit::returnPressed, this, &MainWindow::socketConnect);
 
     mTreeWidget = new QTreeWidget(this);
